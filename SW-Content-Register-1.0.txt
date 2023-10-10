@@ -1,0 +1,39 @@
+NXP Software Content Register
+
+Package:                   an-dsp_for_lpc553x_using_pq
+
+Version:                   1.0
+Outgoing License:          LA_OPT_NXP_Software_License v48 July 2023- Additional Distribution License granted, license in Section 2.3 applies
+License File:              LICENSE.txt
+Description and comments:  This project shows the usage of PowerQaud in the application and the PowerQuad APIs.
+Release Location:          https://github.com/nxp-appcodehub/an-dsp_for_lpc553x_using_pq
+Origin:                    NXP (proprietary)
+                           NXP (BSD-3-Clause)
+                           CMSIS - ARM (Apache-2.0) - https://github.com/ARM-software/CMSIS_5/
+                           cmsis_iccarm - IAR Systems, ARM (Apache-2.0) - https://github.com/ARM-software/CMSIS_5/
+						   
+
+CMSIS                      Name: CMSIS                                       
+                           Version: 5.8.0                                    
+                           Outgoing License: Apache License 2.0              
+                           License File: CMSIS/LICENSE.txt                   
+                           Format: source code                               
+                           Description: Vendor-independent hardware          
+                           abstraction layer for microcontrollers that are   
+                           based on Arm Cortex processors, distributed by    
+                           ARM. cores                                        
+                           Release location: https://github.com/nxp-appcodehub/an-dsp_for_lpc553x_using_pq/tree/main/CMSIS/                     
+                           Origin: ARM (Apache-2.0) - https://github.com/ARM-software/CMSIS_5/                       
+
+                           
+cmsis_iccarm               Name: cmsis_iccarm.h                                     
+                           Version: 5.8.0                                    
+                           Outgoing License: Apache License 2.0              
+                           License File: CMSIS/LICENSE.txt                   
+                           Format: header files                               
+                           Description and comments: Vendor-independent hardware          
+                           abstraction layer for microcontrollers that are   
+                           based on Arm Cortex processors, distributed by    
+                           ARM. cores     
+                           Release location: https://github.com/nxp-appcodehub/an-dsp_for_lpc553x_using_pq/tree/main/CMSIS/Core/Include/cmsis_iccarm.h           
+                           Origin: IAR Systems, ARM (Apache-2.0) - https://github.com/ARM-software/CMSIS_5/	
