@@ -88,7 +88,7 @@ void task_pq_fft_512(void)
 
     /*  */
     memset(gLcdFreqSpecDispBuf, 0u, sizeof(gLcdFreqSpecDispBuf));
-    for (i = 0u; i < APP_PQ_FFT_SAMPLE_COUNT_512; i++)
+    for (i = 0u; i < APP_PQ_FFT_SAMPLE_COUNT_512 && (i < LCD_WIDTH); i++)
     {
         gLcdFreqSpecDispBuf[i] = (int)(gPQFftF32In[i] * 128.0); /* (0,0.5)(0, 128) */
     }

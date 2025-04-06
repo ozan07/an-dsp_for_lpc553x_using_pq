@@ -72,8 +72,10 @@ void task_pq_mat_inv(void)
     //memset(gAppBmpDisplayData, 0xFF, 2 * LCD_HEIGHT * LCD_WIDTH);
     //App_BmpDumpFromFile("2:\\MInv24b.bmp", &height, &width, gAppBmpDisplayData);
     //lcd_clear_image(gAppBmpDisplayData, height*width*2);
-    LCD_DisplayImage(0, 0, LCD_WIDTH, LCD_HEIGHT, (uint16_t *)IMAGE_MATRIX_INV_ADDRESS);
-
+    //LCD_DisplayImage(0, 0, LCD_WIDTH, LCD_HEIGHT, (uint16_t *)IMAGE_MATRIX_INV_ADDRESS);
+    
+		LCD_ClearScreen(LCD_COLOR_WHITE);
+		
     /* ʾ */
     sprintf((char *)gLcdTextDispBuf, "PowerQuad Matrix Inversion x%d", PQ_MAT_INV_ROW_COL_COUNT_MAX);
     LCD_PrintText(0, gLcdTextDispBuf, LCD_COLOR_BLUE);

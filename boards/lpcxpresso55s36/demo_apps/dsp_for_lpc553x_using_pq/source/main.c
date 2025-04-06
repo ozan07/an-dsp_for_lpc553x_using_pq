@@ -58,7 +58,7 @@
 
      
      
-#define IMAGE_WELCOME_ADDR        0x08000000    /* address of flexspi flash for welcome image */  
+//#define IMAGE_WELCOME_ADDR        0x08000000    /* address of flexspi flash for welcome image */  
 
 
   
@@ -106,7 +106,7 @@ extern volatile uint32_t menu_update_flag;     //indicates menu changed
 /*******************************************************************************
  * Code
  ******************************************************************************/
-
+/*
 void APP_LcdSayHello(void)
 {
     uint16_t *pImage = (uint16_t *)IMAGE_WELCOME_ADDR;
@@ -116,7 +116,7 @@ void APP_LcdSayHello(void)
         LCD_WrPixelValue(*pImage++);
     }
 }
-
+*/
 void task_pq_fft_128(void);
 void task_pq_fft_256(void);
 void task_pq_fft_512(void);
@@ -198,7 +198,7 @@ int main(void)
     LCD_Init();
     
     
-    LCD_ClearScreen(0xE007);
+    //LCD_ClearScreen(0xE007);
 
     //LCD_WrChar(0, 100, 'Y', LCD_FONT_1608, 0x001F);
     
@@ -208,7 +208,7 @@ int main(void)
 
     
     
-    APP_LcdSayHello();
+    //APP_LcdSayHello();
     
    while(1)
    {

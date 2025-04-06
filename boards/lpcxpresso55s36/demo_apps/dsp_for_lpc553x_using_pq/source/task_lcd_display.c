@@ -27,29 +27,57 @@ uint16_t gLcdWaveformDispBuf[LCD_WIDTH];    //for time domain waveform
 uint16_t gLcdFreqSpecDispBuf[LCD_WIDTH];    //for frequency domain
 uint8_t  gLcdTextDispBuf[LCD_WIDTH/8u];     //display characters
 
+void lcd_draw_line(		uint16_t hwXpos0, //specify x0 position.
+                      uint16_t hwYpos0, //specify y0 position.
+                      uint16_t hwXpos1, //specify x1 position.
+                      uint16_t hwYpos1, //specify y1 position.
+                      uint16_t hwColor) //specify the color of the line
+{
+		int x = hwXpos1 - hwXpos0;
+    int y = hwYpos1 - hwYpos0;
+    int dx = abs(x), sx = hwXpos0 < hwXpos1 ? 1 : -1;
+    int dy = -abs(y), sy = hwYpos0 < hwYpos1 ? 1 : -1;
+    int err = dx + dy, e2;
+    
+    for (;;){
+        LCD_DrawPoint(hwXpos0, hwYpos0 , hwColor);
+        e2 = 2 * err;
+        if (e2 >= dy) {     
+            if (hwXpos0 == hwXpos1) break;
+            err += dy; hwXpos0 += sx;
+        }
+        if (e2 <= dx) {
+            if (hwYpos0 == hwYpos1) break;
+            err += dx; hwYpos0 += sy;
+        }
+    }
+}
 
 void LCD_PrintWaveform(uint16_t *pData, uint16_t len, uint16_t color)
 {
-    uint16_t x, y;
+    uint16_t x, y , yz1;
+	
     len = (len > LCD_WIDTH) ? LCD_WIDTH : len;
-    for(x = 0; x < len; x++)
+    for(x = 1; x < len; x++)
     {
         y = (pData[x] > LCD_LINE_WAVEFORM_COUNT)?LCD_LINE_WAVEFORM_COUNT : pData[x];
         y = LCD_LINE_WAVEFORM_END - y;
-        
-        for(uint32_t temp_y = y; temp_y <= LCD_LINE_WAVEFORM_END; temp_y++)
-        {
-            LCD_DrawPoint(x, temp_y, color);            
-        }
+
+			  yz1 = (pData[x-1] > LCD_LINE_WAVEFORM_COUNT)?LCD_LINE_WAVEFORM_COUNT : pData[x-1];
+        yz1 = LCD_LINE_WAVEFORM_END - yz1;
+			
+          lcd_draw_line(x-1,yz1,x,y,color);
+					//LCD_DrawPoint(x, y, color);  
+
     }
 }
 
 
 void LCD_PrintWaveformFir(uint16_t *pData, uint16_t len, uint16_t color)
 {
-    uint16_t x, y;
+    uint16_t x, y , yz1;
     len = (len > LCD_WIDTH)?LCD_WIDTH:len;
-    
+  /*  
     for(x = 0; x < len; x++)
     {
         y = (pData[x] > LCD_LINE_FREQSPEC_COUNT)?LCD_LINE_FREQSPEC_COUNT:pData[x];
@@ -59,7 +87,27 @@ void LCD_PrintWaveformFir(uint16_t *pData, uint16_t len, uint16_t color)
         {
              LCD_DrawPoint(x, temp_y, color);         
         }
-    } 
+    }
+
+*/
+		
+		
+		    for(x = 1; x < len; x++)
+    {
+        y = (pData[x] > LCD_LINE_FREQSPEC_COUNT)?LCD_LINE_FREQSPEC_COUNT : pData[x];
+        y = LCD_LINE_FREQSPEC_END - y;
+
+			  yz1 = (pData[x-1] > LCD_LINE_FREQSPEC_COUNT)?LCD_LINE_FREQSPEC_COUNT : pData[x-1];
+        yz1 = LCD_LINE_FREQSPEC_END - yz1;
+			
+          lcd_draw_line(x-1,yz1,x,y,color);
+					//LCD_DrawPoint(x, y, color);  
+
+    }
+
+
+
+		
 }
 
 void LCD_PrintFreqSpec(uint16_t *pData, uint16_t len, uint16_t color)

@@ -37,7 +37,7 @@
  * Definitions
  ******************************************************************************/
 #define BOARD_LCD_SPI               Driver_SPI8
-#define BOARD_LCD_SPI_BAUDRATE      50000000U /*! Transfer baudrate */
+#define BOARD_LCD_SPI_BAUDRATE      40000000U /*! Transfer baudrate */
 
 
 #define BOARD_LCD_DC_GPIO           GPIO /*! LCD data/command base */
@@ -57,7 +57,23 @@
 #define LCD_SPI_SSEL                3
 #define LCD_SPI_SPOL                kSPI_SpolActiveAllLow
 
-
+#define FONT_1206				12
+#define FONT_1608				16
+	
+#define WHITE						0xFFFF
+#define BLACK						0x0000	  
+#define BLUE						0x001F  
+#define BRED						0XF81F
+#define GRED						0XFFE0
+#define GBLUE						0X07FF
+#define RED							0xF800
+#define MAGENTA					0xF81F
+#define GREEN						0x07E0
+#define CYAN						0x7FFF
+#define YELLOW					0xFFE0
+#define BROWN						0XBC40 
+#define BRRED						0XFC07 
+#define GRAY						0X8430
 
 /*******************************************************************************
  * Variables
@@ -66,10 +82,152 @@
 static uint8_t srcBuff[BUFFER_SIZE];
 static uint8_t destBuff[BUFFER_SIZE];
 
+void  LCD_WrCmd(uint8_t cmd);
+void lcd_write_byte(uint8_t chByte, uint8_t chCmd);
+static void lcd_write_register(uint8_t chRegister, uint8_t chValue);
+
+
+uint8_t lcd_id;
+uint8_t _rotation = 0;
+
 /*******************************************************************************
  * Code
  ******************************************************************************/
+uint8_t lcd_read_id(void)
+{
+	uint8_t reg = 0xDC;
+	uint8_t tx_val = 0x00;
+	uint8_t rx_val;
+	//__LCD_CS_CLR();
+	//__LCD_DC_CLR();
+	LCD_WrCmd(reg);//HAL_SPI_Transmit(&hspi1,&reg,1,0xff);
+	LCD_WrCmd(tx_val);//HAL_SPI_TransmitReceive(&hspi1,&tx_val,&rx_val,1,0xff);
+	LCD_WrCmd(tx_val);//HAL_SPI_TransmitReceive(&hspi1,&tx_val,&rx_val,1,0xff);
+	LCD_WrCmd(tx_val);//HAL_SPI_TransmitReceive(&hspi1,&tx_val,&rx_val,1,0xff);
+	//__LCD_CS_SET();
+	return destBuff[0];
+	
+}
+void setRotation(uint8_t rotation)
+{
+		switch(_rotation){
 
+			case 0:
+			 /* Memory access control: MY = 0, MX = 0, MV = 0, ML = 0 */
+			 /*  */
+				lcd_write_register(0X36, 0x00);
+				lcd_write_byte(0x2A,LCD_CMD);
+				lcd_write_byte(0x00,LCD_DATA);
+				lcd_write_byte(0x00,LCD_DATA);
+				lcd_write_byte(0x00,LCD_DATA);
+				lcd_write_byte((LCD_WIDTH-1)&0xff,LCD_DATA);
+				lcd_write_byte(0x2B,LCD_CMD);
+				lcd_write_byte(0x00,LCD_DATA);
+				lcd_write_byte(0x00,LCD_DATA);
+				lcd_write_byte(((LCD_HEIGHT-1)>>8)&0xff,LCD_DATA);
+				lcd_write_byte((LCD_HEIGHT-1)&0xff,LCD_DATA);
+				lcd_write_byte(0x2C,LCD_CMD);
+				break;
+
+			case 1:
+			 /* Memory access control: MY = 0, MX = 1, MV = 1, ML = 0 */
+			 lcd_write_register(0X36, 0x60);
+				lcd_write_byte(0x2A,LCD_CMD);
+				lcd_write_byte(0x00,LCD_DATA);
+				lcd_write_byte(0x00,LCD_DATA);
+				lcd_write_byte(((LCD_HEIGHT-1)>>8)&0xff,LCD_DATA);
+				lcd_write_byte((LCD_HEIGHT-1)&0xff,LCD_DATA);
+				lcd_write_byte(0x2B,LCD_CMD);
+				lcd_write_byte(0x00,LCD_DATA);
+				lcd_write_byte(0x00,LCD_DATA);
+				lcd_write_byte(0x00,LCD_DATA);
+				lcd_write_byte((LCD_WIDTH-1)&0xff,LCD_DATA);	
+				lcd_write_byte(0x2C,LCD_CMD);
+				break;
+
+			case 2:
+			 /* Memory access control: MY = 1, MX = 1, MV = 0, ML = 0 */
+			 lcd_write_register(0X36, 0xC0);
+				lcd_write_byte(0x2A,LCD_CMD);
+				lcd_write_byte(0x00,LCD_DATA);
+				lcd_write_byte(0x00,LCD_DATA);
+				lcd_write_byte(0x00,LCD_DATA);
+				lcd_write_byte((LCD_WIDTH-1)&0xff,LCD_DATA);
+				lcd_write_byte(0x2B,LCD_CMD);
+				lcd_write_byte(0x00,LCD_DATA);
+				lcd_write_byte(0x00,LCD_DATA);
+				lcd_write_byte(((LCD_HEIGHT-1)>>8)&0xff,LCD_DATA);
+				lcd_write_byte((LCD_HEIGHT-1)&0xff,LCD_DATA);
+				lcd_write_byte(0x2C,LCD_CMD);
+				break;
+
+			case 3:
+			 /* Memory access control: MY = 1, MX = 0, MV = 1, ML = 0 */
+			 lcd_write_register(0X36, 0xA0);
+			
+				lcd_write_byte(0x2A,LCD_CMD);
+				lcd_write_byte(0x00,LCD_DATA);
+				lcd_write_byte(0x00,LCD_DATA);
+				lcd_write_byte(((LCD_HEIGHT-1)>>8)&0xff,LCD_DATA);
+				lcd_write_byte((LCD_HEIGHT-1)&0xff,LCD_DATA);
+
+				lcd_write_byte(0x2B,LCD_CMD);
+				lcd_write_byte(0x00,LCD_DATA);
+				lcd_write_byte(0x00,LCD_DATA);
+				lcd_write_byte(0x00,LCD_DATA);
+				lcd_write_byte((LCD_WIDTH-1)&0xff,LCD_DATA);
+				lcd_write_byte(0x2C,LCD_CMD);
+				break;
+				
+				default:
+				break;
+		 }
+
+}
+void lcd_clear_screen(uint16_t hwColor)  
+{
+	uint32_t i, wCount = LCD_WIDTH;
+	uint8_t hval = hwColor >> 8;
+	uint8_t lval = hwColor & 0xFF;
+	wCount *= LCD_HEIGHT;
+	
+	setRotation(_rotation);
+
+		for (i = 0; i < wCount; i ++) {
+			lcd_write_byte(hval,1);
+			lcd_write_byte(lval,1);
+		}
+		
+
+}
+static void lcd_write_register(uint8_t chRegister, uint8_t chValue)
+{
+	lcd_write_byte(chRegister, LCD_CMD);
+	lcd_write_byte(chValue, LCD_DATA);
+}
+
+void lcd_write_byte(uint8_t chByte, uint8_t chCmd)
+{
+    if (chCmd) {
+        __LCD_DC_SET();
+    } else {
+        __LCD_DC_CLR();
+    }
+    //__LCD_CS_CLR();
+		
+		//HAL_SPI_Transmit(&hspi1,&chByte,1,0xff);
+		
+    spi_transfer_t xfer            = {0};
+    
+		/*Start Transfer*/
+    xfer.txData      = &chByte;
+    xfer.rxData      = destBuff;
+    xfer.dataSize    = 1;
+    xfer.configFlags = kSPI_FrameAssert;
+    SPI_MasterTransferBlocking(LCD_SPI_MASTER, &xfer);
+				
+    //__LCD_CS_SET();
+}
 void LCD_InitPins(void)
 {
     /* Define the init structure for the data/command output pin */
@@ -89,7 +247,7 @@ void LCD_InitPins(void)
     
     /* BKL init */
     //GPIO_PortInit(BOARD_LCD_DC_GPIO, BOARD_LCD_BKL_GPIO_PORT);
-    GPIO_PinInit(BOARD_LCD_DC_GPIO, BOARD_LCD_BKL_GPIO_PORT, BOARD_LCD_BKL_GPIO_PIN, &pin_config);
+    //GPIO_PinInit(BOARD_LCD_DC_GPIO, BOARD_LCD_BKL_GPIO_PORT, BOARD_LCD_BKL_GPIO_PIN, &pin_config);
 
     
 
@@ -163,11 +321,79 @@ void LCD_Init(void)
     srcFreq            = LCD_SPI_MASTER_CLK_FREQ;
     userConfig.sselNum = (spi_ssel_t)LCD_SPI_SSEL;
     userConfig.sselPol = (spi_spol_t)LCD_SPI_SPOL;
-    userConfig.baudRate_Bps = 10000000;
-    SPI_MasterInit(LCD_SPI_MASTER, &userConfig, srcFreq);
+    userConfig.baudRate_Bps = 40000000;
+    userConfig.polarity= kSPI_ClockPolarityActiveLow;
+		userConfig.phase = kSPI_ClockPhaseFirstEdge;
+		
+		SPI_MasterInit(LCD_SPI_MASTER, &userConfig, srcFreq);
     
     LCD_InitPins();
-    LCD_Hx8347Init(LCD_WrData, LCD_WrCmd);
+		
+		
+		
+		lcd_id = lcd_read_id();
+
+
+			lcd_write_byte(0x11,LCD_CMD);
+			SDK_DelayAtLeastUs(100 * 1000U, SDK_DEVICE_MAXIMUM_CPU_CLOCK_FREQUENCY);
+    
+		  lcd_write_register(0x36,0x00);
+			lcd_write_register(0x3a,0x55);
+			lcd_write_byte(0xb2,LCD_CMD);
+			lcd_write_byte(0x0c,LCD_DATA);
+			lcd_write_byte(0x0c,LCD_DATA);
+			lcd_write_byte(0x00,LCD_DATA);
+			lcd_write_byte(0x33,LCD_DATA);
+			lcd_write_byte(0x33,LCD_DATA);
+			lcd_write_register(0xb7,0x35);
+			lcd_write_register(0xbb,0x28);
+			lcd_write_register(0xc0,0x3c);
+			lcd_write_register(0xc2,0x01);
+			lcd_write_register(0xc3,0x0b);
+			lcd_write_register(0xc4,0x20);
+			lcd_write_register(0xc6,0x0f);
+			lcd_write_byte(0xD0,LCD_CMD);
+			lcd_write_byte(0xa4,LCD_DATA);
+			lcd_write_byte(0xa1,LCD_DATA);
+			lcd_write_byte(0xe0,LCD_CMD);
+			lcd_write_byte(0xd0,LCD_DATA);
+			lcd_write_byte(0x01,LCD_DATA);
+			lcd_write_byte(0x08,LCD_DATA);
+			lcd_write_byte(0x0f,LCD_DATA);
+			lcd_write_byte(0x11,LCD_DATA);
+			lcd_write_byte(0x2a,LCD_DATA);
+			lcd_write_byte(0x36,LCD_DATA);
+			lcd_write_byte(0x55,LCD_DATA);
+			lcd_write_byte(0x44,LCD_DATA);
+			lcd_write_byte(0x3a,LCD_DATA);
+			lcd_write_byte(0x0b,LCD_DATA);
+			lcd_write_byte(0x06,LCD_DATA);
+			lcd_write_byte(0x11,LCD_DATA);
+			lcd_write_byte(0x20,LCD_DATA);
+			lcd_write_byte(0xe1,LCD_CMD);
+			lcd_write_byte(0xd0,LCD_DATA);
+			lcd_write_byte(0x02,LCD_DATA);
+			lcd_write_byte(0x07,LCD_DATA);
+			lcd_write_byte(0x0a,LCD_DATA);
+			lcd_write_byte(0x0b,LCD_DATA);
+			lcd_write_byte(0x18,LCD_DATA);
+			lcd_write_byte(0x34,LCD_DATA);
+			lcd_write_byte(0x43,LCD_DATA);
+			lcd_write_byte(0x4a,LCD_DATA);
+			lcd_write_byte(0x2b,LCD_DATA);
+			lcd_write_byte(0x1b,LCD_DATA);
+			lcd_write_byte(0x1c,LCD_DATA);
+			lcd_write_byte(0x22,LCD_DATA);
+			lcd_write_byte(0x1f,LCD_DATA);
+			lcd_write_register(0x55,0xB0);
+			lcd_write_byte(0x29,LCD_CMD);
+			
+			lcd_clear_screen(BLUE);
+
+
+
+		
+   // LCD_Hx8347Init(LCD_WrData, LCD_WrCmd);
     
     
     /* lcd display test */
@@ -184,22 +410,28 @@ void LCD_Init(void)
 }
 
 
-void LCD_SetCursor(uint16_t x, uint16_t y)
+void LCD_SetCursor(uint16_t hwXpos, uint16_t hwYpos)
 {
-    assert(x < LCD_WIDTH);
-    assert(y < LCD_HEIGHT);
+    assert(hwXpos < LCD_WIDTH);
+    assert(hwYpos < LCD_HEIGHT);
     
-    LCD_WrCmd(0x02);    //Column address upper byte
-    LCD_WrData(x>>8);
-    LCD_WrCmd(0x03);    //Column address low byte
-    LCD_WrData(x&0xFF);
-    
-    LCD_WrCmd(0x06);    //Row address upper byte
-    LCD_WrData(y>>8);
-    LCD_WrCmd(0x07);    //Row address low byte
-    LCD_WrData(y&0xFF);
-    
-    LCD_WrCmd(0x22);    //memory write
+		if(1==_rotation||3==_rotation){
+			lcd_write_byte(0x2A,LCD_CMD);
+			lcd_write_byte(((hwXpos)>>8)&0xff,LCD_DATA);
+			lcd_write_byte((hwXpos)&0xff,LCD_DATA);
+			lcd_write_byte(0x2B,LCD_CMD);
+			lcd_write_byte(0x00,LCD_DATA);
+			lcd_write_byte((hwYpos)&0xff,LCD_DATA);
+		}else{
+			lcd_write_byte(0x2A,LCD_CMD);
+			lcd_write_byte(0x00,LCD_DATA);
+			lcd_write_byte(hwXpos&0xff,LCD_DATA);
+			lcd_write_byte(0x2B,LCD_CMD);
+			lcd_write_byte((hwYpos>>8)&0xff,LCD_DATA);
+			lcd_write_byte(hwYpos&0xff,LCD_DATA);
+		}
+		lcd_write_byte(0x2C, LCD_CMD);
+
 }
 
 /* Set the start address and end address for an area */
@@ -269,14 +501,28 @@ void LCD_WrPixelValue(uint16_t pixelVal)
     uint16_t temp = (pixelVal >> 8) | (pixelVal << 8);
     LCD_WrNByteData((uint8_t *)&temp, 2); 
 }
-
+void lcd_write_word(uint16_t hwData)
+{
+		uint8_t hval = hwData >> 8;
+		uint8_t lval = hwData & 0xFF;
+    __LCD_DC_SET();
+    //__LCD_CS_CLR();
+		//HAL_SPI_Transmit(&hspi1,&hval,1,0xff);
+		//HAL_SPI_Transmit(&hspi1,&lval,1,0xff);
+	
+	  LCD_WrData(hval);
+	  LCD_WrData(lval);
+	
+    //__LCD_CS_SET();
+}
 void LCD_DrawPoint(uint16_t x, uint16_t y, uint16_t color)
 {
     assert(x < LCD_WIDTH);
     assert(y < LCD_HEIGHT);
     //uint16_t tempColor = (color >> 8)|(color << 8);
     LCD_SetCursor(x, y);
-    LCD_WrNByteData((uint8_t *)&color, 2);  
+    lcd_write_byte(0x2C, LCD_CMD);
+		lcd_write_word(color);  
 }
 
 

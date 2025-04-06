@@ -79,8 +79,8 @@ void task_pq_mat_mul(void)
     //memset(gAppBmpDisplayData, 0xFF, sizeof(gAppBmpDisplayData)/sizeof(gAppBmpDisplayData[0]));
     //App_BmpDumpFromFile("2:\\MMul24b.bmp", &height, &width, gAppBmpDisplayData);
     //lcd_clear_image(gAppBmpDisplayData, height*width*2);
-    LCD_DisplayImage(0, 0, LCD_WIDTH, LCD_HEIGHT, (uint16_t *)IMAGE_MATRIX_MUL_ADDRESS);
-
+    //LCD_DisplayImage(0, 0, LCD_WIDTH, LCD_HEIGHT, (uint16_t *)IMAGE_MATRIX_MUL_ADDRESS);
+LCD_ClearScreen(LCD_COLOR_WHITE);
     /* ʾ */
     sprintf((char *)gLcdTextDispBuf, "PowerQuad Matrix Multiple x%d", PQ_MAT_ROW_COUNT_MAX);
     LCD_PrintText(0, gLcdTextDispBuf, LCD_COLOR_BLUE);

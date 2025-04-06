@@ -31,8 +31,8 @@ void task_pq_records(void)
 
     //App_BmpDumpFromFile("2:\\Tab24b.bmp", &height, &width, gAppBmpDisplayData);
     //lcd_clear_image(gAppBmpDisplayData, height*width*2);
-    LCD_DisplayImage(0, 0, LCD_WIDTH, LCD_HEIGHT, (uint16_t *)IMAGE_RESULT_TAB_ADDRESS);
-
+    //LCD_DisplayImage(0, 0, LCD_WIDTH, LCD_HEIGHT, (uint16_t *)IMAGE_RESULT_TAB_ADDRESS);
+LCD_ClearScreen(LCD_COLOR_WHITE);
     for (line = 0u; line < 8u; line++)
     {
         height = 113 + line * 24;

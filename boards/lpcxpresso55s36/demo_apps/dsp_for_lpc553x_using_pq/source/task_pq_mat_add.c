@@ -67,8 +67,8 @@ void task_pq_mat_add(void)
     //memset(gAppBmpDisplayData, 0xFF, sizeof(gAppBmpDisplayData)/sizeof(gAppBmpDisplayData[0]));
     //App_BmpDumpFromFile("2:\\MAdd24b.bmp", &height, &width, gAppBmpDisplayData);
     //LCD_ClearImage(gAppBmpDisplayData, height*width*2);
-    LCD_DisplayImage(0, 0, 240, 320, (uint16_t *)IMAGE_MATRIX_ADD_ADDRESS);
-
+    //LCD_DisplayImage(0, 0, 240, 320, (uint16_t *)IMAGE_MATRIX_ADD_ADDRESS);
+    LCD_ClearScreen(LCD_COLOR_WHITE);
 
     /*  */
     sprintf((char *)gLcdTextDispBuf, "PowerQuad Matrix Addition x%d", PQ_MAT_ROW_COUNT_MAX);

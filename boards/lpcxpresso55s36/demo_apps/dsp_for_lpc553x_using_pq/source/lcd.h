@@ -31,6 +31,11 @@
 #define LCD_COLOR_BRRED          0XFC07 
 #define LCD_COLOR_GRAY           0X8430 
 
+#define __LCD_DC_CLR()      GPIO_PortClear(BOARD_LCD_DC_GPIO, BOARD_LCD_DC_GPIO_PORT, 1u << BOARD_LCD_DC_GPIO_PIN); 
+#define __LCD_DC_SET()      GPIO_PortSet(BOARD_LCD_DC_GPIO, BOARD_LCD_DC_GPIO_PORT, 1u << BOARD_LCD_DC_GPIO_PIN);
+    
+#define LCD_CMD					0
+#define LCD_DATA				1    
 
 void LCD_Init(void);
 
