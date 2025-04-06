@@ -195,7 +195,7 @@
 /* Display. */
 #define BOARD_LCD_DC_GPIO      GPIO
 #define BOARD_LCD_DC_GPIO_PORT 1U
-#define BOARD_LCD_DC_GPIO_PIN  5U
+#define BOARD_LCD_DC_GPIO_PIN  28U
 
 /* Serial MWM WIFI */
 #define BOARD_SERIAL_MWM_PORT_CLK_FREQ CLOCK_GetFlexCommClkFreq(2)
