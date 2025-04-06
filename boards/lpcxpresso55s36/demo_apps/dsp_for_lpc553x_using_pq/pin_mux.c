@@ -127,7 +127,7 @@ void SPI8_InitPins(void)
                                          /* Selects pull-up function */
                                          IOCON_PIO_MODE_PULLUP |
                                          /* Standard mode, output slew rate control is enabled */
-                                         IOCON_PIO_SLEW_STANDARD |
+                                         IOCON_PIO_SLEW_FAST |
                                          /* Input function is not inverted */
                                          IOCON_PIO_INV_DI |
                                          /* Enables digital function */
@@ -142,7 +142,7 @@ void SPI8_InitPins(void)
                                         /* Selects pull-up function */
                                         IOCON_PIO_MODE_PULLUP |
                                         /* Standard mode, output slew rate control is enabled */
-                                        IOCON_PIO_SLEW_STANDARD |
+                                        IOCON_PIO_SLEW_FAST |
                                         /* Input function is not inverted */
                                         IOCON_PIO_INV_DI |
                                         /* Enables digital function */
@@ -172,7 +172,7 @@ void SPI8_InitPins(void)
                                         /* Selects pull-up function */
                                         IOCON_PIO_MODE_PULLUP |
                                         /* Standard mode, output slew rate control is enabled */
-                                        IOCON_PIO_SLEW_STANDARD |
+                                        IOCON_PIO_SLEW_FAST |
                                         /* Input function is not inverted */
                                         IOCON_PIO_INV_DI |
                                         /* Enables digital function */
